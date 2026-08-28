@@ -1,11 +1,14 @@
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 
+const AUTO_API_URL = localStorage.getItem("https://script.google.com/macros/s/AKfycbzOrgYnoTIi1w0HQLqiRBIrQxSmoBOXQk4zyw06mfuAg0aDgj_0zo7G2Okme-MS8yxi/exec") || "";
+
 const state = {
   transactions: JSON.parse(localStorage.getItem("wsit_transactions") || "[]"),
-  apiUrl: localStorage.getItem("wsit_api_url") || "",
+  apiUrl: AUTO_API_URL,
   openingBalance: Number(localStorage.getItem("wsit_opening_balance") || 0),
-  charts: {}
+  charts: {},
+  dashboardMonth: localStorage.getItem("wsit_dashboard_month") || ""
 };
 
 const monthNames = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
@@ -24,8 +27,9 @@ function totals(list=state.transactions){
   return {income,expense,net:income-expense};
 }
 
+function validMonth(v){ return /^\d{4}-\d{2}$/.test(String(v||"")); }
 function monthList(){
-  const set = new Set(state.transactions.map(x=>x.date.slice(0,7)));
+  const set = new Set(state.transactions.map(x=>String(x.date||"").slice(0,7)).filter(validMonth));
   set.add(currentMonth());
   return [...set].sort().reverse();
 }
@@ -53,7 +57,9 @@ function closeModal(){ $("#transactionModal").classList.add("hidden"); $("#trans
 async function api(action, data={}){
   if(!state.apiUrl) return null;
   const payload=JSON.stringify({action,...data});
-  const res=await fetch(state.apiUrl,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"payload="+encodeURIComponent(payload)});
+  const url=state.apiUrl + (state.apiUrl.includes("?") ? "&" : "?") + "payload=" + encodeURIComponent(payload);
+  const res=await fetch(url,{method:"GET",cache:"no-store"});
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
   return await res.json();
 }
 
@@ -66,14 +72,16 @@ async function syncLoad(){
       saveLocal(); renderAll(); showToast("Data spreadsheet berhasil dimuat.");
       $("#dbStatus").textContent="Terhubung";
       $(".status-dot").style.background="#22c55e";
+      if($("#dbStatusSettings")) $("#dbStatusSettings").textContent="Terhubung";
     }else throw new Error(result?.error||"Gagal memuat data");
-  }catch(e){ $("#dbStatus").textContent="Gagal koneksi"; showToast("Koneksi gagal: "+e.message); }
+  }catch(e){ $("#dbStatus").textContent="Gagal koneksi"; if($("#dbStatusSettings")) $("#dbStatusSettings").textContent="Gagal koneksi"; showToast("Koneksi gagal: "+e.message); }
 }
 
 async function saveTransaction(tx){
   const localIndex=state.transactions.findIndex(x=>x.id===tx.id);
   if(localIndex>=0) state.transactions[localIndex]=tx; else state.transactions.push(tx);
   saveLocal(); renderAll();
+if(state.apiUrl){ setTimeout(()=>syncLoad(), 250); }
   if(state.apiUrl){
     try{
       const result=await api("upsert",{transaction:tx});
@@ -108,19 +116,40 @@ function escapeHtml(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;",
 function editTx(id){openModal(state.transactions.find(x=>x.id===id));}
 
 function renderDashboard(){
-  const month=currentMonth(), list=state.transactions.filter(x=>x.date.startsWith(month)), t=totals(list);
-  const all=totals();
-  $("#balanceValue").textContent=money(state.openingBalance+all.net);
-  $("#incomeValue").textContent=money(t.income); $("#expenseValue").textContent=money(t.expense); $("#netValue").textContent=money(t.net);
-  $("#incomeMeta").textContent=`${monthNames[Number(month.slice(5))-1]} ${month.slice(0,4)}`;
-  $("#expenseMeta").textContent=`${monthNames[Number(month.slice(5))-1]} ${month.slice(0,4)}`;
-  $("#recentTransactions").innerHTML=transactionRows(state.transactions.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5));
-  const months=monthList(), sel=$("#dailyMonthSelect"), old=sel.value||month;
+  const months=monthList();
+  const sel=$("#dailyMonthSelect");
+  const selected=state.dashboardMonth;
+  const month=validMonth(selected) && months.includes(selected) ? selected : (months.includes(currentMonth()) ? currentMonth() : months[0]);
+  state.dashboardMonth=month;
+  localStorage.setItem("wsit_dashboard_month",month);
   sel.innerHTML=months.map(m=>`<option value="${m}">${monthNames[Number(m.slice(5))-1]} ${m.slice(0,4)}</option>`).join("");
-  sel.value=months.includes(old)?old:month;
-  drawDaily(sel.value); drawMonthly();
+  sel.value=month;
+  updateDashboardMonth(month);
+  $("#recentTransactions").innerHTML=transactionRows(state.transactions.slice().sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))).slice(0,5));
+  drawMonthly();
 }
+
+function updateDashboardMonth(month){
+  if(!validMonth(month)) return;
+  state.dashboardMonth=month;
+  localStorage.setItem("wsit_dashboard_month",month);
+  const list=state.transactions.filter(x=>String(x.date||"").startsWith(month));
+  const t=totals(list);
+  const all=totals();
+  // Saldo tetap seluruh periode; hanya 3 kartu berikut yang mengikuti bulan pilihan.
+  $("#balanceValue").textContent=money(state.openingBalance+all.net);
+  $("#incomeValue").textContent=money(t.income);
+  $("#expenseValue").textContent=money(t.expense);
+  $("#netValue").textContent=money(t.net);
+  const label=`${monthNames[Number(month.slice(5))-1]} ${month.slice(0,4)}`;
+  $("#incomeMeta").textContent=label;
+  $("#expenseMeta").textContent=label;
+  $("#netMeta").textContent=`${label} · Pemasukan − pengeluaran`;
+  drawDaily(month);
+}
+
 function drawDaily(month){
+  const list=state.transactions.filter(x=>String(x.date||"").startsWith(month));
   const days=new Date(Number(month.slice(0,4)),Number(month.slice(5)),0).getDate();
   const labels=[...Array(days)].map((_,i)=>String(i+1));
   const inc=labels.map(d=>sumDay(month, d, "income")), exp=labels.map(d=>sumDay(month,d,"expense"));
@@ -139,16 +168,16 @@ function replaceChart(id,cfg){if(state.charts[id])state.charts[id].destroy();sta
 
 function renderTransactions(){
   const q=$("#searchInput").value.toLowerCase(), type=$("#typeFilter").value, month=$("#dateFilter").value;
-  let list=state.transactions.filter(x=>(!q||x.description.toLowerCase().includes(q))&&(type==="all"||x.type===type)&&(!month||x.date.startsWith(month)));
+  let list=state.transactions.filter(x=>(!q||String(x.description||"").toLowerCase().includes(q))&&(type==="all"||x.type===type)&&(!month||String(x.date||"").startsWith(month)));
   $("#allTransactions").innerHTML=transactionRows(list);
 }
 function renderReports(){
   const groups={};
-  state.transactions.forEach(x=>{const m=x.date.slice(0,7); groups[m]??={income:0,expense:0}; groups[m][x.type]+=Number(x.amount)});
+  state.transactions.filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(String(x.date||""))).forEach(x=>{const m=x.date.slice(0,7); groups[m]??={income:0,expense:0}; if(x.type==="income"||x.type==="expense") groups[m][x.type]+=Number(x.amount)||0;});
   const months=Object.keys(groups).sort().reverse();
   $("#monthlyReport").innerHTML=months.length?`<table><thead><tr><th>Bulan</th><th>Pemasukan</th><th>Pengeluaran</th><th>Bersih</th></tr></thead><tbody>${months.map(m=>`<tr><td>${monthNames[Number(m.slice(5))-1]} ${m.slice(0,4)}</td><td class="amount-income">${money(groups[m].income)}</td><td class="amount-expense">${money(groups[m].expense)}</td><td>${money(groups[m].income-groups[m].expense)}</td></tr>`).join("")}</tbody></table>`:`<div class="empty">Belum ada data laporan.</div>`;
-  const month=$("#reportMonth").value||currentMonth(); $("#reportMonth").value=month;
-  const days={}; state.transactions.filter(x=>x.date.startsWith(month)).forEach(x=>{days[x.date]??={income:0,expense:0};days[x.date][x.type]+=Number(x.amount)});
+  const month=$("#reportMonth").value||state.dashboardMonth||currentMonth(); $("#reportMonth").value=month;
+  const days={}; state.transactions.filter(x=>x.date && x.date.startsWith(month)).forEach(x=>{days[x.date]??={income:0,expense:0}; if(x.type==="income"||x.type==="expense") days[x.date][x.type]+=Number(x.amount)||0;});
   const dates=Object.keys(days).sort().reverse();
   $("#dailyReport").innerHTML=dates.length?`<table><thead><tr><th>Tanggal</th><th>Pemasukan</th><th>Pengeluaran</th><th>Bersih</th></tr></thead><tbody>${dates.map(d=>`<tr><td>${dateText(d)}</td><td class="amount-income">${money(days[d].income)}</td><td class="amount-expense">${money(days[d].expense)}</td><td>${money(days[d].income-days[d].expense)}</td></tr>`).join("")}</tbody></table>`:`<div class="empty">Tidak ada transaksi pada bulan ini.</div>`;
 }
@@ -157,7 +186,7 @@ function renderAll(){renderDashboard();renderTransactions();renderReports();}
 
 $("#openAddBtn").onclick=()=>openModal();
 $("#closeModal").onclick=closeModal; $("#cancelBtn").onclick=closeModal;
-$("#dailyMonthSelect").onchange=e=>drawDaily(e.target.value);
+$("#dailyMonthSelect").onchange=e=>{ updateDashboardMonth(e.target.value); };
 $("#transactionForm").onsubmit=async e=>{
   e.preventDefault();
   const id=$("#editId").value||uid();
@@ -170,8 +199,8 @@ $$("[data-page-link]").forEach(b=>b.onclick=()=>go(b.dataset.pageLink));
 $("#clearFilter").onclick=()=>{$("#searchInput").value="";$("#typeFilter").value="all";$("#dateFilter").value="";renderTransactions()};
 $("#reportMonth").onchange=renderReports;
 
+// URL database memakai koneksi yang sudah tersimpan. Pengguna tidak perlu mengisi ulang.
 $("#apiUrl").value=state.apiUrl; $("#openingBalance").value=state.openingBalance;
-$("#saveApiBtn").onclick=async()=>{state.apiUrl=$("#apiUrl").value.trim();localStorage.setItem("wsit_api_url",state.apiUrl);await syncLoad()};
 $("#loadServerBtn").onclick=syncLoad;
 $("#saveOpeningBtn").onclick=()=>{state.openingBalance=Number($("#openingBalance").value||0);localStorage.setItem("wsit_opening_balance",state.openingBalance);renderDashboard();showToast("Saldo awal disimpan.")};
 $("#exportCsvBtn").onclick=()=>{

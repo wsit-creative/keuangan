@@ -140,12 +140,14 @@
       <section id="settingsPage" class="page">
         <section class="panel settings-panel">
           <h2>Pengaturan Database</h2>
-          <p class="muted">Hubungkan website ke Google Spreadsheet melalui Google Apps Script.</p>
-          <label>URL Web App Google Apps Script</label>
-          <input id="apiUrl" class="input" placeholder="https://script.google.com/macros/s/....../exec" />
+          <p class="muted">Koneksi Google Spreadsheet sudah tersimpan otomatis.</p>
+          <div class="connection-box">
+            <div><strong>Database Spreadsheet</strong><p class="muted">URL Apps Script tidak perlu diisi ulang.</p></div>
+            <div class="connection-status"><span class="status-dot"></span><strong id="dbStatusSettings">Otomatis</strong></div>
+          </div>
+          <input id="apiUrl" class="input" type="hidden" />
           <div class="settings-actions">
-            <button class="primary-btn" id="saveApiBtn">Simpan & Tes Koneksi</button>
-            <button class="ghost-btn" id="loadServerBtn">Ambil Data Spreadsheet</button>
+            <button class="primary-btn" id="loadServerBtn">↻ Sinkronkan Data</button>
           </div>
           <hr />
           <label>Saldo Awal</label>
