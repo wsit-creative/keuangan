@@ -1,7 +1,9 @@
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 
-const AUTO_API_URL = localStorage.getItem("https://script.google.com/macros/s/AKfycbzOrgYnoTIi1w0HQLqiRBIrQxSmoBOXQk4zyw06mfuAg0aDgj_0zo7G2Okme-MS8yxi/exec") || "";
+const AUTO_API_URL = "https://script.google.com/macros/s/AKfycbzOrgYnoTIi1w0HQLqiRBIrQxSmoBOXQk4zyw06mfuAg0aDgj_0zo7G2Okme-MS8yxi/exec";
+// URL Apps Script ditanam langsung agar website otomatis terhubung.
+localStorage.setItem("wsit_api_url", AUTO_API_URL);
 
 const state = {
   transactions: JSON.parse(localStorage.getItem("wsit_transactions") || "[]"),
@@ -199,7 +201,7 @@ $$("[data-page-link]").forEach(b=>b.onclick=()=>go(b.dataset.pageLink));
 $("#clearFilter").onclick=()=>{$("#searchInput").value="";$("#typeFilter").value="all";$("#dateFilter").value="";renderTransactions()};
 $("#reportMonth").onchange=renderReports;
 
-// URL database memakai koneksi yang sudah tersimpan. Pengguna tidak perlu mengisi ulang.
+// URL database ditanam otomatis di AUTO_API_URL. Tidak perlu diisi manual.
 $("#apiUrl").value=state.apiUrl; $("#openingBalance").value=state.openingBalance;
 $("#loadServerBtn").onclick=syncLoad;
 $("#saveOpeningBtn").onclick=()=>{state.openingBalance=Number($("#openingBalance").value||0);localStorage.setItem("wsit_opening_balance",state.openingBalance);renderDashboard();showToast("Saldo awal disimpan.")};
@@ -210,3 +212,6 @@ $("#exportCsvBtn").onclick=()=>{
 };
 
 renderAll();
+
+// Sinkronkan otomatis saat website dibuka.
+if (state.apiUrl) setTimeout(syncLoad, 300);
