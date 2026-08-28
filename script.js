@@ -25,8 +25,9 @@ function totals(list=state.transactions){
   return {income,expense,net:income-expense};
 }
 
+function validMonth(v){ return /^\d{4}-\d{2}$/.test(String(v||"")); }
 function monthList(){
-  const set = new Set(state.transactions.map(x=>x.date.slice(0,7)));
+  const set = new Set(state.transactions.map(x=>String(x.date||"").slice(0,7)).filter(validMonth));
   set.add(currentMonth());
   return [...set].sort().reverse();
 }
@@ -111,24 +112,28 @@ function escapeHtml(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;",
 function editTx(id){openModal(state.transactions.find(x=>x.id===id));}
 
 function renderDashboard(){
-  const month=(state.dashboardMonth && monthList().includes(state.dashboardMonth)) ? state.dashboardMonth : currentMonth();
-  const list=state.transactions.filter(x=>x.date && x.date.startsWith(month)), t=totals(list);
-  const all=totals();
-  $("#balanceValue").textContent=money(state.openingBalance+all.net);
-  $("#incomeValue").textContent=money(t.income); $("#expenseValue").textContent=money(t.expense); $("#netValue").textContent=money(t.net);
-  $("#incomeMeta").textContent=`${monthNames[Number(month.slice(5))-1]} ${month.slice(0,4)}`;
-  $("#expenseMeta").textContent=`${monthNames[Number(month.slice(5))-1]} ${month.slice(0,4)}`;
-  $("#recentTransactions").innerHTML=transactionRows(state.transactions.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5));
-  const months=monthList(), sel=$("#dailyMonthSelect"), old=state.dashboardMonth||sel.value||month;
-  sel.innerHTML=months.map(m=>`<option value="${m}">${monthNames[Number(m.slice(5))-1]} ${m.slice(0,4)}</option>`).join("");
-  state.dashboardMonth=months.includes(old)?old:month;
-  sel.value=state.dashboardMonth;
-  drawDaily(state.dashboardMonth); drawMonthly();
-}
-function drawDaily(month){
+  const months=monthList();
+  const sel=$("#dailyMonthSelect");
+  const selected=state.dashboardMonth;
+  const month=validMonth(selected) && months.includes(selected) ? selected : (months.includes(currentMonth()) ? currentMonth() : months[0]);
   state.dashboardMonth=month;
-  const list=state.transactions.filter(x=>x.date && x.date.startsWith(month));
+  localStorage.setItem("wsit_dashboard_month",month);
+  sel.innerHTML=months.map(m=>`<option value="${m}">${monthNames[Number(m.slice(5))-1]} ${m.slice(0,4)}</option>`).join("");
+  sel.value=month;
+  updateDashboardMonth(month);
+  $("#recentTransactions").innerHTML=transactionRows(state.transactions.slice().sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))).slice(0,5));
+  drawMonthly();
+}
+
+function updateDashboardMonth(month){
+  if(!validMonth(month)) return;
+  state.dashboardMonth=month;
+  localStorage.setItem("wsit_dashboard_month",month);
+  const list=state.transactions.filter(x=>String(x.date||"").startsWith(month));
   const t=totals(list);
+  const all=totals();
+  // Saldo tetap seluruh periode; hanya 3 kartu berikut yang mengikuti bulan pilihan.
+  $("#balanceValue").textContent=money(state.openingBalance+all.net);
   $("#incomeValue").textContent=money(t.income);
   $("#expenseValue").textContent=money(t.expense);
   $("#netValue").textContent=money(t.net);
@@ -136,6 +141,11 @@ function drawDaily(month){
   $("#incomeMeta").textContent=label;
   $("#expenseMeta").textContent=label;
   $("#netMeta").textContent=`${label} · Pemasukan − pengeluaran`;
+  drawDaily(month);
+}
+
+function drawDaily(month){
+  const list=state.transactions.filter(x=>String(x.date||"").startsWith(month));
   const days=new Date(Number(month.slice(0,4)),Number(month.slice(5)),0).getDate();
   const labels=[...Array(days)].map((_,i)=>String(i+1));
   const inc=labels.map(d=>sumDay(month, d, "income")), exp=labels.map(d=>sumDay(month,d,"expense"));
@@ -172,7 +182,7 @@ function renderAll(){renderDashboard();renderTransactions();renderReports();}
 
 $("#openAddBtn").onclick=()=>openModal();
 $("#closeModal").onclick=closeModal; $("#cancelBtn").onclick=closeModal;
-$("#dailyMonthSelect").onchange=e=>{state.dashboardMonth=e.target.value; renderDashboard();};
+$("#dailyMonthSelect").onchange=e=>{ updateDashboardMonth(e.target.value); };
 $("#transactionForm").onsubmit=async e=>{
   e.preventDefault();
   const id=$("#editId").value||uid();
