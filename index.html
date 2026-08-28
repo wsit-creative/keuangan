@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arus Kas WSIT</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">+</div>
+        <div>
+          <strong>Arus Kas</strong>
+          <span>WSIT</span>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-item active" data-page="dashboard">⌂ <span>Dashboard</span></button>
+        <button class="nav-item" data-page="transactions">▤ <span>Transaksi</span></button>
+        <button class="nav-item" data-page="reports">◔ <span>Laporan</span></button>
+        <button class="nav-item" data-page="settings">⚙ <span>Pengaturan</span></button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="status-dot"></div>
+        <div>
+          <small>Status database</small>
+          <strong id="dbStatus">Mode lokal</strong>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSubtitle">Ringkasan arus kas Anda</p>
+        </div>
+        <button class="primary-btn" id="openAddBtn">＋ Tambah Transaksi</button>
+      </header>
+
+      <section id="dashboardPage" class="page active-page">
+        <div class="cards">
+          <article class="card balance-card">
+            <div class="card-label">Sisa Saldo</div>
+            <div class="card-value" id="balanceValue">Rp0</div>
+            <div class="card-meta" id="balanceMeta">Saldo awal + pemasukan − pengeluaran</div>
+          </article>
+          <article class="card income-card">
+            <div class="card-label">Total Pemasukan</div>
+            <div class="card-value" id="incomeValue">Rp0</div>
+            <div class="card-meta" id="incomeMeta">Bulan ini</div>
+          </article>
+          <article class="card expense-card">
+            <div class="card-label">Total Pengeluaran</div>
+            <div class="card-value" id="expenseValue">Rp0</div>
+            <div class="card-meta" id="expenseMeta">Bulan ini</div>
+          </article>
+          <article class="card net-card">
+            <div class="card-label">Arus Bersih</div>
+            <div class="card-value" id="netValue">Rp0</div>
+            <div class="card-meta" id="netMeta">Pemasukan − pengeluaran</div>
+          </article>
+        </div>
+
+        <div class="grid-2">
+          <section class="panel chart-panel">
+            <div class="panel-head">
+              <div>
+                <h2>Arus Kas Harian</h2>
+                <p id="dailyChartLabel">Bulan berjalan</p>
+              </div>
+              <select id="dailyMonthSelect"></select>
+            </div>
+            <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
+          </section>
+
+          <section class="panel chart-panel">
+            <div class="panel-head">
+              <div>
+                <h2>Ringkasan Bulanan</h2>
+                <p>Pemasukan dan pengeluaran</p>
+              </div>
+            </div>
+            <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Transaksi Terbaru</h2>
+              <p>5 transaksi terakhir</p>
+            </div>
+            <button class="ghost-btn" data-page-link="transactions">Lihat semua →</button>
+          </div>
+          <div id="recentTransactions" class="table-wrap"></div>
+        </section>
+      </section>
+
+      <section id="transactionsPage" class="page">
+        <section class="panel">
+          <div class="filter-row">
+            <input id="searchInput" class="input" placeholder="Cari keterangan..." />
+            <select id="typeFilter" class="input">
+              <option value="all">Semua transaksi</option>
+              <option value="income">Pemasukan</option>
+              <option value="expense">Pengeluaran</option>
+            </select>
+            <input id="dateFilter" class="input" type="month" />
+            <button class="ghost-btn" id="clearFilter">Reset</button>
+          </div>
+          <div id="allTransactions" class="table-wrap"></div>
+        </section>
+      </section>
+
+      <section id="reportsPage" class="page">
+        <div class="report-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <div><h2>Laporan Bulanan</h2><p>Rekap berdasarkan bulan</p></div>
+              <button class="ghost-btn" id="exportCsvBtn">Export CSV</button>
+            </div>
+            <div id="monthlyReport" class="table-wrap"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div><h2>Laporan Harian</h2><p>Rekap berdasarkan tanggal</p></div>
+              <input id="reportMonth" class="input compact" type="month" />
+            </div>
+            <div id="dailyReport" class="table-wrap"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="settingsPage" class="page">
+        <section class="panel settings-panel">
+          <h2>Pengaturan Database</h2>
+          <p class="muted">Hubungkan website ke Google Spreadsheet melalui Google Apps Script.</p>
+          <label>URL Web App Google Apps Script</label>
+          <input id="apiUrl" class="input" placeholder="https://script.google.com/macros/s/....../exec" />
+          <div class="settings-actions">
+            <button class="primary-btn" id="saveApiBtn">Simpan & Tes Koneksi</button>
+            <button class="ghost-btn" id="loadServerBtn">Ambil Data Spreadsheet</button>
+          </div>
+          <hr />
+          <label>Saldo Awal</label>
+          <input id="openingBalance" class="input" type="number" min="0" step="1" placeholder="0" />
+          <button class="primary-btn" id="saveOpeningBtn">Simpan Saldo Awal</button>
+          <div class="info-box">
+            <strong>Format Spreadsheet</strong>
+            <p>Sheet <b>Transaksi</b> akan dibuat otomatis dengan kolom: ID, Tipe, Jumlah, Keterangan, Tanggal, Dibuat.</p>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="transactionModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><h2 id="modalTitle">Tambah Transaksi</h2><p>Catat pemasukan atau pengeluaran</p></div>
+        <button class="icon-btn" id="closeModal">×</button>
+      </div>
+      <form id="transactionForm">
+        <input type="hidden" id="editId" />
+        <div class="type-switch">
+          <label><input type="radio" name="type" value="income" checked /> <span>Pemasukan</span></label>
+          <label><input type="radio" name="type" value="expense" /> <span>Pengeluaran</span></label>
+        </div>
+        <label>Jumlah
+          <input class="input" id="amount" type="number" min="1" required placeholder="Contoh: 150000" />
+        </label>
+        <label>Keterangan
+          <input class="input" id="description" required placeholder="Contoh: Desain poster" />
+        </label>
+        <label>Tanggal
+          <input class="input" id="transactionDate" type="date" required />
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="ghost-btn" id="cancelBtn">Batal</button>
+          <button type="submit" class="primary-btn">Simpan Transaksi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>

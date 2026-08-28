@@ -1,0 +1,60 @@
+:root{
+  --bg:#f5f7fb; --panel:#fff; --text:#18212f; --muted:#718096; --line:#e8edf3;
+  --primary:#2563eb; --primary-dark:#1d4ed8; --green:#16a34a; --red:#ef4444;
+  --shadow:0 10px 30px rgba(31,41,55,.07); --radius:16px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:250px;background:#111827;color:#fff;padding:24px 16px;display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0}
+.brand{display:flex;align-items:center;gap:12px;padding:5px 10px 30px}
+.brand-icon{width:40px;height:40px;border-radius:11px;background:#22c55e;font-size:31px;line-height:38px;text-align:center;font-weight:800}
+.brand strong{display:block;font-size:18px}.brand span{color:#9ca3af;font-size:13px}
+nav{display:grid;gap:7px}
+.nav-item{border:0;background:transparent;color:#aeb8c7;text-align:left;padding:13px 14px;border-radius:11px;display:flex;gap:12px;align-items:center;font-weight:600}
+.nav-item:hover,.nav-item.active{background:#1f2937;color:#fff}
+.sidebar-footer{margin-top:auto;border-top:1px solid #293241;padding:18px 8px;display:flex;gap:10px;align-items:center}
+.status-dot{width:9px;height:9px;border-radius:50%;background:#f59e0b}.sidebar-footer small{display:block;color:#8f9bab}.sidebar-footer strong{font-size:12px}
+.main{margin-left:250px;width:calc(100% - 250px);padding:30px 34px 50px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+.topbar h1{margin:0;font-size:28px}.topbar p{margin:6px 0 0;color:var(--muted)}
+.primary-btn,.ghost-btn{border:0;border-radius:10px;padding:11px 16px;font-weight:700}
+.primary-btn{background:var(--primary);color:#fff}.primary-btn:hover{background:var(--primary-dark)}
+.ghost-btn{background:#eef2f7;color:#374151}.ghost-btn:hover{background:#e2e8f0}
+.page{display:none}.active-page{display:block}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card{padding:21px}
+.card-label{color:var(--muted);font-size:13px;font-weight:700}.card-value{font-size:25px;font-weight:800;margin:9px 0}
+.card-meta{font-size:12px;color:var(--muted)}.balance-card{border-top:4px solid #2563eb}.income-card{border-top:4px solid #16a34a}.expense-card{border-top:4px solid #ef4444}.net-card{border-top:4px solid #8b5cf6}
+.grid-2,.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.panel{padding:20px;margin-bottom:18px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:15px}
+.panel-head h2,.panel h2{font-size:17px;margin:0}.panel-head p,.muted{font-size:13px;color:var(--muted);margin:5px 0 0}
+.chart-wrap{height:285px;position:relative}.filter-row{display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:10px;margin-bottom:16px}
+.input{width:100%;border:1px solid #d9e0e8;background:#fff;border-radius:10px;padding:11px 12px;outline:none;color:var(--text)}
+.input:focus{border-color:#93b4ff;box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+.compact{width:160px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th,td{padding:13px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}
+th{color:#687588;font-size:12px;text-transform:uppercase;letter-spacing:.04em;background:#fafbfc}
+.amount-income{color:var(--green);font-weight:800}.amount-expense{color:var(--red);font-weight:800}
+.badge{display:inline-flex;padding:5px 8px;border-radius:99px;font-size:11px;font-weight:800}.badge-income{background:#dcfce7;color:#15803d}.badge-expense{background:#fee2e2;color:#b91c1c}
+.row-actions{display:flex;gap:6px}.small-btn{border:0;background:#eef2f7;border-radius:7px;padding:6px 8px;font-size:12px}.small-btn.delete{color:#b91c1c}
+.settings-panel{max-width:700px}.settings-panel label{display:block;font-size:13px;font-weight:700;margin:18px 0 7px}
+.settings-actions{display:flex;gap:10px;margin-top:12px}.settings-panel hr{border:0;border-top:1px solid var(--line);margin:25px 0}
+.info-box{margin-top:22px;padding:14px;border-radius:12px;background:#eff6ff;color:#1e40af;font-size:13px}.info-box p{margin:5px 0 0}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
+.modal.hidden{display:none}.modal-card{background:#fff;width:min(480px,100%);border-radius:18px;padding:23px;box-shadow:0 25px 70px rgba(0,0,0,.2)}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}.modal-head h2{margin:0}.modal-head p{margin:5px 0;color:var(--muted);font-size:13px}
+.icon-btn{border:0;background:#f1f5f9;width:34px;height:34px;border-radius:9px;font-size:22px;color:#64748b}
+#transactionForm label{display:block;font-size:13px;font-weight:700;margin-bottom:14px}.type-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.type-switch label{margin:0!important}.type-switch input{display:none}.type-switch span{display:block;text-align:center;padding:11px;border:1px solid var(--line);border-radius:10px;color:#64748b}
+.type-switch input:checked+span{border-color:#93b4ff;background:#eff6ff;color:#1d4ed8}
+.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}
+.toast{position:fixed;right:24px;bottom:24px;background:#111827;color:#fff;padding:12px 16px;border-radius:10px;opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;z-index:50;font-size:13px}.toast.show{opacity:1;transform:translateY(0)}
+.empty{text-align:center;color:var(--muted);padding:35px 15px}
+@media(max-width:1000px){.cards{grid-template-columns:1fr 1fr}.grid-2,.report-grid{grid-template-columns:1fr}}
+@media(max-width:720px){.sidebar{width:70px;padding:18px 8px}.brand div:not(.brand-icon),.nav-item span,.sidebar-footer div:not(.status-dot){display:none}.nav-item{justify-content:center}.main{margin-left:70px;width:calc(100% - 70px);padding:20px 15px}.topbar{align-items:flex-start;gap:12px}.topbar h1{font-size:22px}.cards{grid-template-columns:1fr}.filter-row{grid-template-columns:1fr}.settings-actions{flex-direction:column}}
