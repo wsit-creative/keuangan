@@ -494,3 +494,19 @@ body{
     font-size:9px;
   }
 }
+
+
+/* MOBILE STATUS — KEEP DATABASE INDICATOR IN TOP NAVBAR */
+@media (max-width:720px){
+  .sidebar-footer{display:flex !important;position:absolute;right:8px;top:8px;height:52px;margin:0;padding:0 8px;border:0;gap:7px;align-items:center;background:#182235;border-radius:10px;z-index:2}
+  .sidebar-footer small{display:none}
+  .sidebar-footer > div:last-child{display:block !important;min-width:0}
+  .sidebar-footer strong{display:block;font-size:10px;line-height:1;white-space:nowrap}
+  .sidebar-footer .status-dot{display:block !important;width:9px;height:9px;flex:0 0 9px}
+  .sidebar nav{padding-right:78px}
+}
+@media (max-width:390px){
+  .sidebar-footer{right:6px;padding:0 6px}
+  .sidebar nav{padding-right:68px;gap:2px}
+  .nav-item{font-size:20px}
+}
