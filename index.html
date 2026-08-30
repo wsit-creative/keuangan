@@ -191,6 +191,20 @@
     </div>
   </div>
 
+  <div class="modal hidden" id="deleteConfirmModal">
+    <div class="modal-card delete-confirm-card">
+      <div class="delete-confirm-icon">!</div>
+      <div class="modal-head delete-confirm-head">
+        <div><h2>Hapus transaksi?</h2><p>Data yang sudah dihapus tidak dapat dikembalikan.</p></div>
+        <button class="icon-btn" id="closeDeleteConfirm" type="button">×</button>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="ghost-btn" id="cancelDeleteBtn">Batal</button>
+        <button type="button" class="delete-confirm-btn" id="confirmDeleteBtn">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
   <script src="script.js"></script>
 </body>

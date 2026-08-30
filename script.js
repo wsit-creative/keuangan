@@ -94,8 +94,20 @@ if(state.apiUrl){ setTimeout(()=>syncLoad(), 250); }
   showToast("Transaksi berhasil disimpan.");
 }
 
+function askDeleteConfirmation(id){
+  return new Promise(resolve=>{
+    const modal=$("#deleteConfirmModal");
+    if(!modal){ resolve(confirm("Yakin ingin menghapus transaksi ini?")); return; }
+    modal.classList.remove("hidden");
+    const yes=$("#confirmDeleteBtn"), no=$("#cancelDeleteBtn"), close=$("#closeDeleteConfirm");
+    const finish=(result)=>{ modal.classList.add("hidden"); yes.onclick=no.onclick=close.onclick=null; modal.onclick=null; resolve(result); };
+    yes.onclick=()=>finish(true); no.onclick=()=>finish(false); close.onclick=()=>finish(false);
+    modal.onclick=(e)=>{ if(e.target===modal) finish(false); };
+  });
+}
+
 async function deleteTransaction(id){
-  if(!confirm("Hapus transaksi ini?")) return;
+  if(!(await askDeleteConfirmation(id))) return;
   state.transactions=state.transactions.filter(x=>x.id!==id); saveLocal(); renderAll();
   if(state.apiUrl){
     try{ await api("delete",{id}); }catch(e){showToast("Terhapus lokal, spreadsheet gagal."); return;}

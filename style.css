@@ -537,3 +537,14 @@ body{
     border-radius:11px;
   }
 }
+
+
+/* Delete confirmation dialog */
+.delete-confirm-card{max-width:430px}
+.delete-confirm-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fee2e2;color:#dc2626;font-size:26px;font-weight:800;margin-bottom:14px}
+.delete-confirm-head{margin-bottom:18px}
+.delete-confirm-head h2{margin:0 0 5px}
+.delete-confirm-head p{margin:0;color:#718096;line-height:1.5}
+.delete-confirm-btn{border:0;border-radius:10px;padding:12px 18px;background:#ef4444;color:#fff;font-weight:800;cursor:pointer;font-size:14px}
+.delete-confirm-btn:hover{filter:brightness(.96)}
+@media(max-width:720px){.delete-confirm-card{width:100%;max-width:430px}.delete-confirm-btn,.delete-confirm-card .ghost-btn{flex:1}}
