@@ -61,3 +61,49 @@ th{color:#687588;font-size:12px;text-transform:uppercase;letter-spacing:.04em;ba
 
 
 .connection-box{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 20px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc;margin:14px 0 18px}.connection-box p{margin:4px 0 0}.connection-status{display:flex;align-items:center;gap:9px;white-space:nowrap}.connection-status .status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;background:#22c55e}
+
+/* ===== MOBILE / RESPONSIVE FIX ===== */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+.main{min-width:0}
+.panel,.card,.grid-2,.report-grid,.cards{min-width:0}
+.chart-wrap{width:100%;max-width:100%;overflow:hidden}
+.chart-wrap canvas{max-width:100%!important}
+
+@media(max-width:720px){
+  .app-shell{width:100%;max-width:100%;overflow-x:hidden}
+  .sidebar{width:62px;min-width:62px;padding:16px 7px}
+  .brand{justify-content:center;padding:5px 0 24px}
+  .brand-icon{width:40px;height:40px;flex:0 0 40px}
+  .nav-item{width:100%;padding:12px 8px;justify-content:center}
+  .main{margin-left:62px;width:calc(100% - 62px);max-width:calc(100% - 62px);padding:16px 10px 35px;overflow-x:hidden}
+  .topbar{width:100%;min-width:0;flex-wrap:wrap;margin-bottom:18px}
+  .topbar>div{min-width:0}
+  .topbar h1{font-size:21px;line-height:1.2}
+  .topbar p{font-size:12px}
+  .topbar .primary-btn{padding:9px 11px;font-size:12px;white-space:nowrap}
+  .cards{gap:10px;margin-bottom:12px}
+  .card{padding:16px;border-radius:14px}
+  .card-value{font-size:22px;line-height:1.2;overflow-wrap:anywhere}
+  .card-meta{font-size:11px}
+  .grid-2,.report-grid{gap:12px;margin-bottom:12px}
+  .panel{padding:14px;margin-bottom:12px;border-radius:14px}
+  .panel-head{align-items:flex-start;flex-wrap:wrap;gap:9px}
+  .panel-head h2,.panel h2{font-size:16px}
+  .compact{width:100%;max-width:100%}
+  .chart-wrap{height:235px}
+  .filter-row{gap:8px}
+  .table-wrap{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:600px}
+  .settings-panel{max-width:100%}
+  .connection-box{align-items:flex-start;flex-direction:column;gap:10px}
+  .connection-status{width:100%;justify-content:flex-start}
+  .modal{padding:10px}
+  .modal-card{width:100%;max-width:480px;padding:18px}
+}
+@media(max-width:390px){
+  .sidebar{width:56px;min-width:56px}
+  .main{margin-left:56px;width:calc(100% - 56px);max-width:calc(100% - 56px);padding-left:8px;padding-right:8px}
+  .topbar .primary-btn{width:100%}
+  .chart-wrap{height:215px}
+  .card{padding:14px}
+}
