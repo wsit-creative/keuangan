@@ -99,8 +99,9 @@ function askDeleteConfirmation(id){
     const modal=$("#deleteConfirmModal");
     if(!modal){ resolve(confirm("Yakin ingin menghapus transaksi ini?")); return; }
     modal.classList.remove("hidden");
+    document.body.classList.add("delete-alert-open");
     const yes=$("#confirmDeleteBtn"), no=$("#cancelDeleteBtn"), close=$("#closeDeleteConfirm");
-    const finish=(result)=>{ modal.classList.add("hidden"); yes.onclick=no.onclick=close.onclick=null; modal.onclick=null; resolve(result); };
+    const finish=(result)=>{ modal.classList.add("hidden"); document.body.classList.remove("delete-alert-open"); yes.onclick=no.onclick=close.onclick=null; modal.onclick=null; resolve(result); };
     yes.onclick=()=>finish(true); no.onclick=()=>finish(false); close.onclick=()=>finish(false);
     modal.onclick=(e)=>{ if(e.target===modal) finish(false); };
   });

@@ -539,12 +539,123 @@ body{
 }
 
 
-/* Delete confirmation dialog */
-.delete-confirm-card{max-width:430px}
-.delete-confirm-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fee2e2;color:#dc2626;font-size:26px;font-weight:800;margin-bottom:14px}
-.delete-confirm-head{margin-bottom:18px}
-.delete-confirm-head h2{margin:0 0 5px}
-.delete-confirm-head p{margin:0;color:#718096;line-height:1.5}
-.delete-confirm-btn{border:0;border-radius:10px;padding:12px 18px;background:#ef4444;color:#fff;font-weight:800;cursor:pointer;font-size:14px}
-.delete-confirm-btn:hover{filter:brightness(.96)}
-@media(max-width:720px){.delete-confirm-card{width:100%;max-width:430px}.delete-confirm-btn,.delete-confirm-card .ghost-btn{flex:1}}
+/* ===== SweetAlert-style delete confirmation ===== */
+.delete-alert-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(15,23,42,.58);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+.delete-alert-overlay.hidden{display:none}
+.delete-alert-card{
+  position:relative;
+  width:min(100%,430px);
+  box-sizing:border-box;
+  padding:34px 30px 28px;
+  border-radius:22px;
+  background:#fff;
+  text-align:center;
+  box-shadow:0 24px 70px rgba(15,23,42,.28);
+  animation:deleteAlertIn .18s ease-out;
+}
+.delete-alert-close{
+  position:absolute;
+  top:13px;
+  right:15px;
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  color:#94a3b8;
+  font-size:26px;
+  line-height:1;
+  cursor:pointer;
+}
+.delete-alert-close:hover{background:#f1f5f9;color:#475569}
+.delete-alert-icon{
+  width:78px;
+  height:78px;
+  margin:0 auto 18px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff7ed;
+  border:7px solid #ffedd5;
+  box-sizing:border-box;
+  animation:deleteIconPop .28s ease-out;
+}
+.delete-alert-icon span{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#f59e0b;
+  color:#fff;
+  font-size:31px;
+  font-weight:900;
+  line-height:1;
+}
+.delete-alert-card h2{
+  margin:0 0 9px;
+  color:#172033;
+  font-size:22px;
+  line-height:1.25;
+}
+.delete-alert-card p{
+  margin:0 auto;
+  max-width:340px;
+  color:#718096;
+  font-size:14px;
+  line-height:1.6;
+}
+.delete-alert-actions{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:25px;
+}
+.delete-alert-actions button{
+  min-width:125px;
+  border:0;
+  border-radius:11px;
+  padding:12px 18px;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+  transition:transform .12s ease,box-shadow .12s ease,background .12s ease;
+}
+.delete-alert-actions button:active{transform:scale(.97)}
+.delete-alert-cancel{
+  background:#eef2f7;
+  color:#475569;
+}
+.delete-alert-cancel:hover{background:#e2e8f0}
+.delete-alert-confirm{
+  background:#ef4444;
+  color:#fff;
+  box-shadow:0 7px 16px rgba(239,68,68,.22);
+}
+.delete-alert-confirm:hover{background:#dc2626}
+body.delete-alert-open{overflow:hidden}
+@keyframes deleteAlertIn{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes deleteIconPop{from{transform:scale(.65)}to{transform:scale(1)}}
+@media(max-width:720px){
+  .delete-alert-overlay{padding:16px}
+  .delete-alert-card{padding:31px 20px 22px;border-radius:20px}
+  .delete-alert-icon{width:70px;height:70px;margin-bottom:15px}
+  .delete-alert-icon span{width:46px;height:46px;font-size:28px}
+  .delete-alert-card h2{font-size:20px}
+  .delete-alert-card p{font-size:13px}
+  .delete-alert-actions{gap:8px;margin-top:21px}
+  .delete-alert-actions button{min-width:0;flex:1;padding:12px 10px}
+}

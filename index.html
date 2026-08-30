@@ -191,16 +191,17 @@
     </div>
   </div>
 
-  <div class="modal hidden" id="deleteConfirmModal">
-    <div class="modal-card delete-confirm-card">
-      <div class="delete-confirm-icon">!</div>
-      <div class="modal-head delete-confirm-head">
-        <div><h2>Hapus transaksi?</h2><p>Data yang sudah dihapus tidak dapat dikembalikan.</p></div>
-        <button class="icon-btn" id="closeDeleteConfirm" type="button">×</button>
+  <div class="modal hidden delete-alert-overlay" id="deleteConfirmModal">
+    <div class="delete-alert-card" role="dialog" aria-modal="true" aria-labelledby="deleteAlertTitle">
+      <button class="delete-alert-close" id="closeDeleteConfirm" type="button" aria-label="Tutup">×</button>
+      <div class="delete-alert-icon" aria-hidden="true">
+        <span>!</span>
       </div>
-      <div class="modal-actions">
-        <button type="button" class="ghost-btn" id="cancelDeleteBtn">Batal</button>
-        <button type="button" class="delete-confirm-btn" id="confirmDeleteBtn">Ya, Hapus</button>
+      <h2 id="deleteAlertTitle">Yakin ingin menghapus?</h2>
+      <p>Transaksi ini akan dihapus secara permanen dan tidak dapat dikembalikan.</p>
+      <div class="delete-alert-actions">
+        <button type="button" class="delete-alert-cancel" id="cancelDeleteBtn">Batal</button>
+        <button type="button" class="delete-alert-confirm" id="confirmDeleteBtn">Ya, Hapus</button>
       </div>
     </div>
   </div>
