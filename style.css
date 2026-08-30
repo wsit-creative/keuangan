@@ -510,3 +510,30 @@ body{
   .sidebar nav{padding-right:68px;gap:2px}
   .nav-item{font-size:20px}
 }
+
+
+/* ===== WSIT LOGO ===== */
+.brand-icon{
+  display:block;
+  object-fit:cover;
+  background:transparent;
+  overflow:hidden;
+  flex:0 0 40px;
+}
+@media(max-width:720px){
+  .brand-icon{
+    width:46px;
+    height:46px;
+    flex:0 0 46px;
+    border-radius:12px;
+    object-fit:cover;
+  }
+}
+@media(max-width:390px){
+  .brand-icon{
+    width:42px;
+    height:42px;
+    flex:0 0 42px;
+    border-radius:11px;
+  }
+}
